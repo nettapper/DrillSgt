@@ -10,7 +10,8 @@ import {
   StyleSheet,
   Text,
   View,
-  Image
+  Image,
+  Button
 } from 'react-native';
 
 const instructions = Platform.select({
@@ -50,12 +51,26 @@ export default class App extends Component<{}> {
         </View>
 
         <View style={{flexGrow: 1}}>
-          <Text>Bottom buttons</Text>
+          <Button
+            onPress={onPressCompleteWorkout}
+            title="Complete This Workout"
+            color="#841584"
+            accessibilityLabel="Once finished the workout you will input your ratings."
+          />
+          <Button
+            onPress={onPressStatistics}
+            title="Stats"
+            color="#66CCCC"
+            accessibilityLabel="Statistics and charts."
+          />
         </View>
       </View>
     );
   }
 }
+
+class onPressCompleteWorkout extends Component<{}> {}
+class onPressStatistics extends Component<{}> {}
 
 const styles = StyleSheet.create({
   container: {
