@@ -7,7 +7,6 @@ var main = function () {
   queryExercise(db);
   queryWorkout(db);
   queryCurrent(db);
-  console.log(randomExercise());
 }
 
 var successcb = function () {
@@ -154,6 +153,25 @@ export function randomExercise() {
           e = data["rows"]["item"](r);
         }
         resolve(e);
+      },
+      function (error) {
+        reject("Exercise random selection failed.");
+      });
+  });
+}
+
+export function getCurrent() {
+  return new Promise(function(resolve, reject) {
+    var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
+    db.executeSql('SELECT * FROM Current', [],
+      function (data) {
+        cs = [];
+        if(data && data["rows"] && data["rows"]["length"]) {
+          for(var i=0; i < data["rows"]["length"]; i++) {
+            cs.push(data["rows"]["item"](i));
+          }
+        }
+        resolve(cs);
       },
       function (error) {
         reject("Exercise random selection failed.");
