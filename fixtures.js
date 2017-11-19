@@ -44,6 +44,14 @@ var populateDatabase = function (db, testing) {
   db.executeSql('INSERT INTO Exercise (name, startCount) VALUES ("Pushups", 10);', []);
   db.executeSql('INSERT INTO Exercise (name, startCount) VALUES ("Situps", 20);', []);
   db.executeSql('INSERT INTO Exercise (name, startCount) VALUES ("Diamond Pushups", 15);', []);
+  db.executeSql('INSERT INTO Exercise (name, startCount) VALUES ("Basic Squats", 30);', []);
+  db.executeSql('INSERT INTO Exercise (name, startCount) VALUES ("Broad Jump", 40);', []);
+  db.executeSql('INSERT INTO Exercise (name, startCount) VALUES ("Calf Raises", 50);', []);
+  db.executeSql('INSERT INTO Exercise (name, startCount) VALUES ("Tricep Dip", 20);', []);
+  db.executeSql('INSERT INTO Exercise (name, startCount) VALUES ("Plank", 30);', []);
+  db.executeSql('INSERT INTO Exercise (name, startCount) VALUES ("Mountain Climbers", 30);', []);
+  db.executeSql('INSERT INTO Exercise (name, startCount) VALUES ("Bear Crawls", 50);', []);
+  db.executeSql('INSERT INTO Exercise (name, startCount) VALUES ("Basic Burpees", 25);', []);
 
   if(testing) addExampleData(db);
 }
@@ -219,7 +227,9 @@ var insertCurrent = function(name, count) {
 export function randomExerciseAndInsertCurrent() {
   return new Promise(function(resolve, reject) {
     randomExercise().then((ex) => {
-      return insertCurrent(ex.name, ex.startCount);  // TODO not startCount
+      var sc = ex.startCount;
+      var count = Math.floor(((Math.random() - 0.5) * sc / 4) + sc);  // TODO better random count
+      return insertCurrent(ex.name, count);
     }).then((currentId) => {
       resolve(currentId);
     }) .catch((err) => {
