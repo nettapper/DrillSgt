@@ -14,6 +14,8 @@ import {
   Button
 } from 'react-native';
 
+var PushNotification = require('react-native-push-notification');
+
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' +
     'Cmd+D or shake for dev menu',
