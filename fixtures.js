@@ -4,9 +4,14 @@ var main = function () {
   var testing = true;
   var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
   populateDatabase(db, testing);  // adds the Exercises, bool to say if testing
-  // queryExercise(db);
-  // queryWorkout(db);
-  // queryCurrent(db);
+  // getWorkout().then((d) => {
+  //   console.log("d", d);
+  //   return insertWorkout(10, "Pushups", 100, "2004-01-02 02:34:56", 5, 1);
+  // }).then(() => {
+  //   return getWorkout();
+  // }).then((d) => {
+  //   console.log("d prime", d);
+  // });
 }
 
 var successcb = function () {
@@ -150,13 +155,32 @@ export function removeCurrentById(id) {
 export function insertWorkout(id, name, count, time, diff, completed) {
   return new Promise(function(resolve, reject) {
     var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
-    db.executeSql('INSERT INTO Workout (id, name, count, time, difficulty, completed) VALUES (?, ?, ?, ?, ?, ?);',
+    db.executeSql('INSERT INTO Workout (id, name, count, time, difficulty, completed) VALUES (?, ?, ?, ?, ?, ?)',
       [id, name, count, time, diff, completed],
       function (data) {
         resolve();
       },
       function (error) {
-        reject("removeCurrentById failed");
+        reject("insertWorkout failed");
+      });
+  });
+}
+
+export function getWorkout() {
+  return new Promise(function(resolve, reject) {
+    var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
+    db.executeSql('SELECT * FROM Workout', [],
+      function (data) {
+        ws = [];
+        if(data && data["rows"] && data["rows"]["length"]) {
+          for(var i=0; i < data["rows"]["length"]; i++) {
+            ws.push(data["rows"]["item"](i));
+          }
+        }
+        resolve(ws);
+      },
+      function (error) {
+        reject("getWorkout failed");
       });
   });
 }
