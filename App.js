@@ -12,13 +12,12 @@ import {
   View,
   ScrollView,
   Image,
-  Button
+  Button,
+  DeviceEventEmitter,
 } from 'react-native';
 
 import PushNotification from "react-native-push-notification";
 import PieChart from './components/PieChart';
-
-//var PushNotification = require('react-native-push-notification');
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' +
@@ -39,28 +38,35 @@ export default class App extends Component<{}> {
     PushNotification.cancelLocalNotifications({id: '69'});
 
     if (!this.state.activated) {
+      PushNotification.registerNotificationActions(["I\'m Done"]);
+
+      DeviceEventEmitter.addListener('notificationActionReceived', function(action) {
+        console.log('Notification action received: ' + action);
+        const info = JSON.parse(action.dataJSON);
+        if (info.action == "I\'m Done") {
+          // Do work pertaining to Accept action here
+          console.log("im done")
+        }
+      });
+
       PushNotification.localNotificationSchedule({
         id: '69',
-        ticker: "20 PUSHUPS", // (optional)
-        autoCancel: true, // (optional) default: true
-        largeIcon: "ic_launcher", // (optional) default: "ic_launcher"
-        smallIcon: "ic_launcher", // (optional) default: "ic_notification" with fallback for "ic_launcher"
-        bigText: "My big text that will be shown when notification is expanded", // (optional) default: "message" prop
-        subText: "Pushups", // (optional) default: none
-        //color: "red", // (optional) default: system default
-        vibrate: true, // (optional) default: true
-        vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
-        tag: 'some_tag', // (optional) add tag to message
-        group: "group", // (optional) add group to message
-        ongoing: false, // (optional) set whether this is an "ongoing" notification
-        title: "20 Pushups", // (optional, for iOS this is only used in apple watch, the title will be the app name on other iOS devices)
-        message: "Don't be a pussy!", // (required)
-        playSound: false, // (optional) default: true
-        soundName: 'default', // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
-        number: '10', // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
-        repeatType: 'day', // (Android only) Repeating interval. Could be one of `week`, `day`, `hour`, `minute, `time`. If specified as time, it should be accompanied by one more parameter 'repeatTime` which should the number of milliseconds between each interval
-        actions: '["I\'m Done"]',  // (Android only) See the doc for notification actions to know more
-        date: new Date(Date.now() + (1 * 1000)) // in 10 secs
+        largeIcon: "ic_launcher",
+        smallIcon: "ic_notification",
+        bigText: "C'mon you filthy maggot your have 20 pushups to do!",
+        subText: "Pushups",
+        color: "red",
+        vibrate: true,
+        vibration: 2000,
+        group: "DrillSgt",
+        title: "20 Pushups",
+        message: "Gimme 20!",
+        playSound: false,
+        //soundName: 'default',
+        //repeatType: 'time',
+        //repeatTime: 1500,
+        actions: '["I\'m Done"]',
+        date: new Date(Date.now() + (1 * 1000))
       });
 
       this.setState({"activated": true});
@@ -76,7 +82,7 @@ export default class App extends Component<{}> {
               <Image
                 style={{flex:1, width:'100%'}}
                 resizeMode='contain'
-                source={require('./img/drill-sgt-logo.gif')}
+                source={require('./img/drill-sgt-logo.png')}
               />
             </View>
             <View style={{flex: 5}}>
