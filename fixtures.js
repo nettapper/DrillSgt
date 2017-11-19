@@ -40,9 +40,14 @@ var populateDatabase = function (db) {
 }
 
 var queryExercise = function(db) {
-  db.executeSql('SELECT * FROM Exercise', [2],
-    function () {
-      console.log("select succeded", errorcb);
+  db.executeSql('SELECT * FROM Exercise', [],
+    function (data) {
+      console.log("select succeded");
+      if(data && data["rows"] && data["rows"]["length"]) {
+        for(var i=0; i < data["rows"]["length"]; i++) {
+          console.log(data["rows"]["item"](i));
+        }
+      }
     },
     function (error) {
       console.log("select failed", error);
