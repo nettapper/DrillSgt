@@ -32,6 +32,7 @@ export default class App extends Component<{}> {
     this.setNotification = this.setNotification.bind(this);
     this.getPieChartData = this.getPieChartData.bind(this);
     this.updateCurrent = this.updateCurrent.bind(this);
+    this.setNotification = this.setNotification.bind(this);
 
     // Get data
     this.getPieChartData();
@@ -60,7 +61,6 @@ export default class App extends Component<{}> {
         }
       });
 
-      this.setNotification();
       this.setState({"activated": true});
     }
   }
@@ -70,6 +70,7 @@ export default class App extends Component<{}> {
     getCurrent().then(function(currentList) {
       console.log(currentList);
       that.setState({"current": currentList});
+      that.setNotification();
       return countExerciseFailure();
     }).catch(function(error) {
       console.log(error);
@@ -77,7 +78,6 @@ export default class App extends Component<{}> {
   }
 
   getPieChartData() {
-    console.log("I GOT CALLED")
     var that = this;
     countExerciseComplete().then(function(countC) {
       console.log(countC)
@@ -111,29 +111,28 @@ export default class App extends Component<{}> {
   }
 
   setNotification() {
-    PushNotification.cancelLocalNotifications({id: '69'});
+    var that = this;
 
-    // Query random workout
+    PushNotification.cancelLocalNotifications({id: '69'});
 
     PushNotification.localNotificationSchedule({
       id: '69',
       largeIcon: "ic_launcher",
       smallIcon: "ic_notification",
-      bigText: "C'mon you filthy maggot your have 20 pushups to do!",
-      subText: "Pushups",
+      bigText: "C'mon you filthy maggot your have " + that.state.current[0].count + " " + that.state.current[0].name + " to do!",
+      subText: that.state.current[0].name,
       color: "red",
       vibrate: true,
       vibration: 2000,
       group: "DrillSgt",
-      title: "20 Pushups",
-      message: "Gimme 20!",
+      title: that.state.current[0].count + " " + that.state.current[0].name,
+      message: "Gimme " + that.state.current[0].count + "!",
       playSound: false,
       //soundName: 'default',
       //repeatType: 'time',
       //repeatTime: 1500,
       actions: '["Do it Later"]',
       date: new Date(Date.now() + (1 * 1000)),
-      workoutId: 10,
     });
   }
 
@@ -143,6 +142,7 @@ export default class App extends Component<{}> {
       that.getPieChartData();
       // Get new workout and update state
       that.updateCurrent();
+      that.setNotification();
     }).catch(function(error) {
       console.log(error);
     });
@@ -154,6 +154,7 @@ export default class App extends Component<{}> {
       that.getPieChartData();
       // Get new workout and update state
       that.updateCurrent();
+      that.setNotification();
     }).catch(function(error) {
       console.log(error);
     });
