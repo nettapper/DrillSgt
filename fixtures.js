@@ -147,4 +147,18 @@ export function removeCurrentById(id) {
   });
 }
 
+export function insertWorkout(id, name, count, time, diff, completed) {
+  return new Promise(function(resolve, reject) {
+    var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
+    db.executeSql('INSERT INTO Workout (id, name, count, time, difficulty, completed) VALUES (?, ?, ?, ?, ?, ?);',
+      [id, name, count, time, diff, completed],
+      function (data) {
+        resolve();
+      },
+      function (error) {
+        reject("removeCurrentById failed");
+      });
+  });
+}
+
 main();
