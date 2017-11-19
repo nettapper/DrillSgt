@@ -21,6 +21,7 @@ export default class App extends Component<{}> {
     super(props);
     this.onPressCompleteWorkout = this.onPressCompleteWorkout.bind(this)
     this.onPressStatistics = this.onPressStatistics.bind(this)
+    this.setNotification = this.setNotification.bind(this)
     this.state = {
       "activated": false,
       "ongoingId": "init",
@@ -37,32 +38,39 @@ export default class App extends Component<{}> {
         const info = JSON.parse(action.dataJSON);
         if (info.action == "Do it Later") {
           // Do work pertaining to I\'m Done action here
-
+          info.date = new Date(Date.now() + (5 * 1000)), // 5 seconds
+          PushNotification.localNotificationSchedule(info);
         }
       });
 
-      PushNotification.localNotificationSchedule({
-        id: '69',
-        largeIcon: "ic_launcher",
-        smallIcon: "ic_notification",
-        bigText: "C'mon you filthy maggot your have 20 pushups to do!",
-        subText: "Pushups",
-        color: "red",
-        vibrate: true,
-        vibration: 2000,
-        group: "DrillSgt",
-        title: "20 Pushups",
-        message: "Gimme 20!",
-        playSound: false,
-        //soundName: 'default',
-        //repeatType: 'time',
-        //repeatTime: 1500,
-        actions: '["Do it Later"]',
-        date: new Date(Date.now() + (1 * 1000))
-      });
-
+      this.setNotification();
       this.setState({"activated": true});
     }
+  }
+
+  setNotification() {
+    PushNotification.cancelLocalNotifications({id: '69'});
+
+    PushNotification.localNotificationSchedule({
+      id: '69',
+      largeIcon: "ic_launcher",
+      smallIcon: "ic_notification",
+      bigText: "C'mon you filthy maggot your have 20 pushups to do!",
+      subText: "Pushups",
+      color: "red",
+      vibrate: true,
+      vibration: 2000,
+      group: "DrillSgt",
+      title: "20 Pushups",
+      message: "Gimme 20!",
+      playSound: false,
+      //soundName: 'default',
+      //repeatType: 'time',
+      //repeatTime: 1500,
+      actions: '["Do it Later"]',
+      date: new Date(Date.now() + (1 * 1000)),
+      workoutId: 10,
+    });
   }
 
   onPressCompleteWorkout() {
