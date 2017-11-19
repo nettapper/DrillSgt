@@ -8,6 +8,7 @@ import {
   Image,
   Button,
   DeviceEventEmitter,
+  Linking,
 } from 'react-native';
 
 import PushNotification from "react-native-push-notification";
@@ -32,7 +33,7 @@ export default class App extends Component<{}> {
         const info = JSON.parse(action.dataJSON);
         if (info.action == "I\'m Done") {
           // Do work pertaining to I\'m Done action here
-          console.log("im done")
+
         }
       });
 
@@ -64,19 +65,11 @@ export default class App extends Component<{}> {
     return (
       <ScrollView>
         <View style={styles.container}>
-          <View style={{marginTop: 30, flexDirection: 'row'}}>
-            <View style={{flex: 1, padding: 5}}>
-              <Image
-                style={{flex:1, width:'100%'}}
-                resizeMode='contain'
-                source={require('./img/drill-sgt-logo.png')}
-              />
-            </View>
+          <View style={{marginTop: 20, flexDirection: 'row'}}>
             <View style={{flex: 5}}>
-              <Text style={{fontSize: 69, textAlign: 'left', paddingLeft: 10}}>Drill Sgt.</Text>
+              <Text style={{fontSize: 69, textAlign: 'center',}}>Drill Sgt</Text>
             </View>
           </View>
-
           <View style={{flexGrow: 2}}>
             <PieChart/>
           </View>
@@ -121,3 +114,18 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
 });
+
+/*
+<View style={{marginTop: 30, flexDirection: 'row'}}>
+  <View style={{flex: 1, padding: 5}}>
+    <Image
+      style={{flex:1, width:'100%'}}
+      resizeMode='contain'
+      source={require('./img/drill-sgt-logo.png')}
+    />
+  </View>
+  <View style={{flex: 5}}>
+    <Text style={{fontSize: 69, textAlign: 'left', paddingLeft: 10}}>Drill Sgt.</Text>
+  </View>
+</View>
+*/
