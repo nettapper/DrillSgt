@@ -142,7 +142,7 @@ export default class App extends Component<{}> {
       playSound: false,
       //soundName: 'default',
       //repeatType: 'time',
-      //repeatTime: 1500,
+      //repeatTime: 5000,
       actions: '["Do it Later"]',
       date: d,
     });
