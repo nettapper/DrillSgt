@@ -5,13 +5,13 @@ var main = function () {
   var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
   populateDatabase(db, testing);  // adds the Exercises, bool to say if testing
   // getWorkout().then((d) => {
-  //   console.log("d", d);
-  //   return insertWorkout(10, "Pushups", 100, "2004-01-02 02:34:56", 5, 1);
+  //   console.log("ddd", d);
+  //   return insertWorkout(10, "Pushups", 100, 5, 1);
   // }).then(() => {
   //   return getWorkout();
   // }).then((d) => {
-  //   console.log("d prime", d);
-  // });
+  //   console.log("ddd prime", d);
+  // }).catch((err) => {console.log("ddd err", err)});
 }
 
 var successcb = function () {
@@ -152,11 +152,11 @@ export function removeCurrentById(id) {
   });
 }
 
-export function insertWorkout(id, name, count, time, diff, completed) {
+export function insertWorkout(id, name, count, diff, completed) {
   return new Promise(function(resolve, reject) {
     var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
-    db.executeSql('INSERT INTO Workout (id, name, count, time, difficulty, completed) VALUES (?, ?, ?, ?, ?, ?)',
-      [id, name, count, time, diff, completed],
+    db.executeSql('INSERT INTO Workout (id, name, count, time, difficulty, completed) VALUES (?, ?, ?, datetime(\'now\', \'localtime\'), ?, ?)',
+      [id, name, count, diff, completed],
       function (data) {
         resolve();
       },
