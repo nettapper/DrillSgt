@@ -11,6 +11,8 @@ import {
   Linking,
 } from 'react-native';
 
+var fixtures = require('./fixtures');
+
 import PushNotification from "react-native-push-notification";
 import PieChart from './components/PieChart';
 
