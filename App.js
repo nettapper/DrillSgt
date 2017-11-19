@@ -13,6 +13,7 @@ import {
   Image,
   Button
 } from 'react-native';
+import PieChart from './components/PieChart';
 
 var PushNotification = require('react-native-push-notification');
 
@@ -50,6 +51,7 @@ export default class App extends Component<{}> {
           <Text style={styles.instructions}>
             {instructions}
           </Text>
+          <PieChart/>
         </View>
 
         <View style={{flexGrow: 1}}>
