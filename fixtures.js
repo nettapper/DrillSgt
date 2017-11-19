@@ -152,20 +152,6 @@ export function removeCurrentById(id) {
   });
 }
 
-export function insertWorkout(id, name, count, diff, completed) {
-  return new Promise(function(resolve, reject) {
-    var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
-    db.executeSql('INSERT INTO Workout (id, name, count, time, difficulty, completed) VALUES (?, ?, ?, datetime(\'now\', \'localtime\'), ?, ?)',
-      [id, name, count, diff, completed],
-      function (data) {
-        resolve();
-      },
-      function (error) {
-        reject("insertWorkout failed");
-      });
-  });
-}
-
 export function getWorkout() {
   return new Promise(function(resolve, reject) {
     var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
@@ -238,5 +224,47 @@ export function randomExerciseAndInsertCurrent() {
     });
   });
 }
+
+var getMaxWorkoutId = function() {
+  return new Promise(function(resolve, reject) {
+    var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
+    db.executeSql('SELECT Max(id) FROM Workout', [],
+      function (data) {
+        var max = undefined;
+        for(var i=0; i < data["rows"]["length"]; i++) {
+          if(max === undefined)
+            max = data["rows"]["item"](i)["Max(id)"];
+          else
+            max = max > data["rows"]["item"](i) ? max : data["rows"]["item"](i)["Max(id)"];
+        }
+        resolve(max);
+      },
+      function (error) {
+        reject("getMaxWorkoutId failed");
+      });
+  });
+}
+
+export function insertWorkout(name, count, difficulty, completed) {
+  return new Promise(function(resolve, reject) {
+    getMaxWorkoutId().then((maxID) => {
+      var workoutId = maxID + 1;
+      var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
+      db.executeSql('INSERT INTO Workout (id, name, count, time, difficulty, completed) VALUES (?, ?, ?, datetime(\'now\', \'localtime\'), ?, ?)',
+        [workoutId, name, count, difficulty, completed],
+        function () {
+          resolve(workoutId);
+        },
+        function (error) {
+          console.log('insertWorkout failed', error);
+          reject("insertWorkout failed");
+        });
+    }).catch((err) => {
+      console.log("couldn't getMaxWorkoutId in insertWorkout", err);
+      reject("couldn't getMaxWorkoutId in insertWorkout");
+    });
+  });
+}
+
 
 main();
