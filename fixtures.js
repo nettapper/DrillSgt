@@ -12,7 +12,6 @@ var main = function () {
   // }).then((d) => {
   //   console.log("ddd prime", d);
   // }).catch((err) => {console.log("ddd err", err)});
-  randomExerciseAndInsertCurrent();
 }
 
 var successcb = function () {
@@ -191,12 +190,12 @@ var getMaxCurrentId = function() {
     var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
     db.executeSql('SELECT Max(id) FROM Current', [],
       function (data) {
-        max = undefined;
+        var max = undefined;
         for(var i=0; i < data["rows"]["length"]; i++) {
           if(max === undefined)
-            max = data["rows"]["item"](i)["count(*)"];
+            max = data["rows"]["item"](i)["Max(id)"];
           else
-            max = max > data["rows"]["item"](i) ? max : data["rows"]["item"](i)["count(*)"];
+            max = max > data["rows"]["item"](i) ? max : data["rows"]["item"](i)["Max(id)"];
         }
         resolve(max);
       },
@@ -211,12 +210,13 @@ var insertCurrent = function(name, count) {
     getMaxCurrentId().then((maxID) => {
       var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
       db.executeSql('INSERT INTO Current (id, name, count, time) VALUES (?, ?, ?, datetime(\'now\', \'localtime\'))',  // TODO rand time
-        [maxID, name, count],
+        [maxID+1, name, count],
         function () {
           resolve(maxID);
         },
         function (error) {
-          reject("insertWorkout failed");
+          console.log('insertCurrent failed', error);
+          reject("insertCurrent failed");
         });
     }).catch((err) => {
       console.log("couldn't getMaxCurrentId in insertCurrent", err);
@@ -225,10 +225,9 @@ var insertCurrent = function(name, count) {
   });
 }
 
-var randomExerciseAndInsertCurrent = function() {
+export function randomExerciseAndInsertCurrent() {
   return new Promise(function(resolve, reject) {
     randomExercise().then((ex) => {
-      console.log('rand ex', ex);
       return insertCurrent(ex.name, ex.startCount);  // TODO not startCount
     }).then((currentId) => {
       resolve(currentId);
