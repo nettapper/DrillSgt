@@ -12,6 +12,7 @@ var main = function () {
   // }).then((d) => {
   //   console.log("ddd prime", d);
   // }).catch((err) => {console.log("ddd err", err)});
+  randomExerciseAndInsertCurrent();
 }
 
 var successcb = function () {
@@ -205,21 +206,35 @@ var getMaxCurrentId = function() {
   });
 }
 
-export function insertCurrent(name, count, datetime) {
+var insertCurrent = function(name, count) {
   return new Promise(function(resolve, reject) {
-    getMaxCurrentId().then(maxID) {
+    getMaxCurrentId().then((maxID) => {
       var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
-      db.executeSql('INSERT INTO Current (id, name, count, time) VALUES (?, ?, ?, ?)',
-        [maxID, name, count, datetime],
+      db.executeSql('INSERT INTO Current (id, name, count, time) VALUES (?, ?, ?, datetime(\'now\', \'localtime\'))',  // TODO rand time
+        [maxID, name, count],
         function () {
           resolve(maxID);
         },
         function (error) {
           reject("insertWorkout failed");
         });
-    }.catch((err) => {
+    }).catch((err) => {
       console.log("couldn't getMaxCurrentId in insertCurrent", err);
       reject("couldn't getMaxCurrentId in insertCurrent");
+    });
+  });
+}
+
+var randomExerciseAndInsertCurrent = function() {
+  return new Promise(function(resolve, reject) {
+    randomExercise().then((ex) => {
+      console.log('rand ex', ex);
+      return insertCurrent(ex.name, ex.startCount);  // TODO not startCount
+    }).then((currentId) => {
+      resolve(currentId);
+    }) .catch((err) => {
+      console.log("something went wrong in randomExerciseAndInsertCurrent", err);
+      reject(err);
     });
   });
 }
