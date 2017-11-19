@@ -174,7 +174,20 @@ export function getCurrent() {
         resolve(cs);
       },
       function (error) {
-        reject("Exercise random selection failed.");
+        reject("getCurrent failed");
+      });
+  });
+}
+
+export function removeCurrentById(id) {
+  return new Promise(function(resolve, reject) {
+    var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
+    db.executeSql('DELETE FROM Current where id = ?', [id],
+      function (data) {
+        resolve();
+      },
+      function (error) {
+        reject("removeCurrentById failed");
       });
   });
 }
