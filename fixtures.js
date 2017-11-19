@@ -12,6 +12,9 @@ var main = function () {
   // }).then((d) => {
   //   console.log("ddd prime", d);
   // }).catch((err) => {console.log("ddd err", err)});
+  insertCurrent("Situps", 222).then(() => {
+    console.log("gc", getCurrent());
+  });
 }
 
 var successcb = function () {
@@ -186,7 +189,7 @@ var getMaxCurrentId = function() {
         resolve(max);
       },
       function (error) {
-        reject("getWorkout failed");
+        reject("getMaxCurrentId failed");
       });
   });
 }
@@ -196,7 +199,8 @@ var insertCurrent = function(name, count) {
     getMaxCurrentId().then((maxID) => {
       var currentId = maxID + 1;
       var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
-      db.executeSql('INSERT INTO Current (id, name, count, time) VALUES (?, ?, ?, datetime(\'now\', \'localtime\'))',  // TODO rand time
+      var n = 1; // num of minutes to advance the time // TODO rand time
+      db.executeSql('INSERT INTO Current (id, name, count, time) VALUES (?, ?, ?, datetime(\'now\', \'localtime\', \'+' + n + ' minutes\'))',
         [currentId, name, count],
         function () {
           resolve(currentId);
