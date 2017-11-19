@@ -208,11 +208,12 @@ var getMaxCurrentId = function() {
 var insertCurrent = function(name, count) {
   return new Promise(function(resolve, reject) {
     getMaxCurrentId().then((maxID) => {
+      var currentId = maxID + 1;
       var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
       db.executeSql('INSERT INTO Current (id, name, count, time) VALUES (?, ?, ?, datetime(\'now\', \'localtime\'))',  // TODO rand time
-        [maxID+1, name, count],
+        [currentId, name, count],
         function () {
-          resolve(maxID);
+          resolve(currentId);
         },
         function (error) {
           console.log('insertCurrent failed', error);
