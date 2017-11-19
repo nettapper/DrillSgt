@@ -103,6 +103,7 @@ export default class App extends Component<{}> {
           removeCurrentById(e.id);
         } else {
           that.setState({"current": [e]});
+          that.setNotification();
         }
       })
     }).catch(function(error) {
@@ -114,6 +115,17 @@ export default class App extends Component<{}> {
     var that = this;
 
     PushNotification.cancelLocalNotifications({id: '69'});
+
+    let d = new Date(Date.now());
+
+    if (d > new Date(that.state.current[0].time)) {
+      d = new Date(Date.now() + (10 * 1000));
+    } else {
+      d = new Date(that.state.current[0].time);
+    }
+
+    console.log("THIS IS THE DATE")
+    console.log(d)
 
     PushNotification.localNotificationSchedule({
       id: '69',
@@ -132,7 +144,7 @@ export default class App extends Component<{}> {
       //repeatType: 'time',
       //repeatTime: 1500,
       actions: '["Do it Later"]',
-      date: new Date(Date.now() + (1 * 1000)),
+      date: d,
     });
   }
 
@@ -142,7 +154,6 @@ export default class App extends Component<{}> {
       that.getPieChartData();
       // Get new workout and update state
       that.updateCurrent();
-      that.setNotification();
     }).catch(function(error) {
       console.log(error);
     });
@@ -154,7 +165,6 @@ export default class App extends Component<{}> {
       that.getPieChartData();
       // Get new workout and update state
       that.updateCurrent();
-      that.setNotification();
     }).catch(function(error) {
       console.log(error);
     });
