@@ -96,4 +96,56 @@ var queryCurrent = function(db) {
     });
 };
 
+var completedAndFailedWorkout = function() {  // TODO export
+  var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
+  completedAndFailedExercisesWithDB(db);
+}
+
+var completedAndFailedWorkoutWithDB = function(db) {
+  var ret = {};  // the return obj
+
+  db.executeSql('SELECT count(*) FROM Workout where completed = 1', [],
+    function (data) {
+      console.log("select Current succeded");
+      if(data && data["rows"] && data["rows"]["length"]) {
+        max = undefined;
+        for(var i=0; i < data["rows"]["length"]; i++) {
+          if(max === undefined)
+            max = data["rows"]["item"](i)["count(*)"];
+          else
+            max = max > data["rows"]["item"](i) ? max : data["rows"]["item"](i)["count(*)"];
+        }
+        ret["Completed"] = max;
+      }
+    },
+    function (error) {
+      console.log("select failed", error);
+    });
+
+  db.executeSql('SELECT count(*) FROM Workout where completed = 0', [],
+    function (data) {
+      console.log("select Current succeded");
+      if(data && data["rows"] && data["rows"]["length"]) {
+        max = undefined;
+        for(var i=0; i < data["rows"]["length"]; i++) {
+          if(max === undefined)
+            max = data["rows"]["item"](i)["count(*)"];
+          else
+            max = max > data["rows"]["item"](i) ? max : data["rows"]["item"](i)["count(*)"];
+        }
+        ret["Failed"] = max;
+      }
+    },
+    function (error) {
+      console.log("select failed", error);
+    });
+
+  console.log(ret);
+  return ret;
+}
+
 main();
+
+module.exports = {
+  completedAndFailedWorkout
+}
