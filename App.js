@@ -33,6 +33,8 @@ export default class App extends Component<{}> {
   }
 
   componentWillMount() {
+    PushNotification.cancelLocalNotifications({id: '69'});
+
     if (!this.state.activated) {
       PushNotification.localNotificationSchedule({
         id: '69',
