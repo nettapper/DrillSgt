@@ -4,9 +4,9 @@ var main = function () {
   var testing = true;
   var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
   populateDatabase(db, testing);  // adds the Exercises, bool to say if testing
-  queryExercise(db);
-  queryWorkout(db);
-  queryCurrent(db);
+  // queryExercise(db);
+  // queryWorkout(db);
+  // queryCurrent(db);
 }
 
 var successcb = function () {
@@ -50,51 +50,6 @@ var addExampleData = function(db) {
 
   db.executeSql('INSERT INTO Current (id, name, count) VALUES (10, "Pushups", 21);', []);
 }
-
-var queryExercise = function(db) {
-  db.executeSql('SELECT * FROM Exercise', [],
-    function (data) {
-      console.log("select Exercise succeded");
-      if(data && data["rows"] && data["rows"]["length"]) {
-        for(var i=0; i < data["rows"]["length"]; i++) {
-          console.log(data["rows"]["item"](i));
-        }
-      }
-    },
-    function (error) {
-      console.log("select failed", error);
-    });
-};
-
-var queryWorkout = function(db) {
-  db.executeSql('SELECT * FROM Workout', [],
-    function (data) {
-      console.log("select Workout succeded");
-      if(data && data["rows"] && data["rows"]["length"]) {
-        for(var i=0; i < data["rows"]["length"]; i++) {
-          console.log(data["rows"]["item"](i));
-        }
-      }
-    },
-    function (error) {
-      console.log("select failed", error);
-    });
-};
-
-var queryCurrent = function(db) {
-  db.executeSql('SELECT * FROM Current', [],
-    function (data) {
-      console.log("select Current succeded");
-      if(data && data["rows"] && data["rows"]["length"]) {
-        for(var i=0; i < data["rows"]["length"]; i++) {
-          console.log(data["rows"]["item"](i));
-        }
-      }
-    },
-    function (error) {
-      console.log("select failed", error);
-    });
-};
 
 export function countExerciseFailure() {
   return new Promise(function(resolve, reject) {
