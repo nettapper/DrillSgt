@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
-  View
+  View,
+  Dimensions,
 } from 'react-native';
 
 import Svg,{
@@ -12,16 +13,13 @@ import Svg,{
 
 import { VictoryPie, VictoryTheme } from "victory-native";
 
-const wh = 300;  // graph width and height
-const imgwh = 100;  // img width and height
-const irpad = 10; // padding for the innerRadius
+const wh = Dimensions.get('window').width * .80;  // graph width and height
+const imgwh = wh / 3;  // img width and height
+const irpad = 15; // padding for the innerRadius
 
 export default class App extends Component<{}> {
   render() {
     const { data } = this.props;
-
-    console.log("GI")
-    console.log(data);
 
     return (
       <Svg width={wh} height={wh}>
@@ -32,13 +30,13 @@ export default class App extends Component<{}> {
           standalone={false}
           responsive={true}
           innerRadius={imgwh + irpad}
-          padAngle={3}
+          padAngle={2}
           colorScale={["tomato", "cyan"]}
           data={[
             { x: "Failed", y: data.Failed },
             { x: "Complete", y: data.Complete }
           ]}
-          labelRadius={90}
+          labelRadius={70}
           style={{ labels: { fill: "black", fontSize: 20, fontWeight: "bold" } }}
         />
       </Svg>

@@ -9,11 +9,16 @@ import {
   Button,
   DeviceEventEmitter,
   Linking,
+  Dimensions,
 } from 'react-native';
 
 import {
   countExerciseComplete,
   countExerciseFailure,
+  getCurrent,
+  insertWorkout,
+  randomExerciseAndInsertCurrent,
+  removeCurrentById,
 } from './fixtures';
 
 import PushNotification from "react-native-push-notification";
@@ -26,30 +31,18 @@ export default class App extends Component<{}> {
     this.onPressFailWorkout = this.onPressFailWorkout.bind(this);
     this.setNotification = this.setNotification.bind(this);
     this.getPieChartData = this.getPieChartData.bind(this);
+    this.updateCurrent = this.updateCurrent.bind(this);
 
     // Get data
     this.getPieChartData();
+    this.getCurrentData();
 
     this.state = {
       "activated": false,
       "ongoingId": "init",
       "pieChartData": {"Failed": 1, "Complete": 1},
-      "current": {"name": "Pushups", "count": 20},
+      "current": [{"id": 0, "name": "Pushups", "count": 20}],
     };
-  }
-
-  getPieChartData() {
-    var that = this;
-    countExerciseComplete().then(function(countC) {
-      console.log(countC);
-      that.setState({"pieChartData": {"Failed": that.state.pieChartData.Failed, "Complete": countC}});
-      return countExerciseFailure();
-    }).then(function(countF) {
-      console.log(countF);
-      that.setState({"pieChartData": {"Failed": countF, "Complete": that.state.pieChartData.Complete}});
-    }).catch(function(error) {
-      console.log(error);
-    });
   }
 
   componentWillMount() {
@@ -70,6 +63,51 @@ export default class App extends Component<{}> {
       this.setNotification();
       this.setState({"activated": true});
     }
+  }
+
+  getCurrentData() {
+    var that = this;
+    getCurrent().then(function(currentList) {
+      console.log(currentList);
+      that.setState({"current": currentList});
+      return countExerciseFailure();
+    }).catch(function(error) {
+      console.log(error);
+    });
+  }
+
+  getPieChartData() {
+    console.log("I GOT CALLED")
+    var that = this;
+    countExerciseComplete().then(function(countC) {
+      console.log(countC)
+      that.setState({"pieChartData": {"Failed": that.state.pieChartData.Failed, "Complete": countC}});
+      return countExerciseFailure();
+    }).then(function(countF) {
+      console.log(countF)
+      that.setState({"pieChartData": {"Failed": countF, "Complete": that.state.pieChartData.Complete}});
+    }).catch(function(error) {
+      console.log(error);
+    });
+  }
+
+  updateCurrent() {
+    var that = this;
+    var outerId = 0;
+    randomExerciseAndInsertCurrent().then(function(currentId) {
+      outerId = currentId;
+      return getCurrent();
+    }).then(function(currentList) {
+      currentList.forEach((e) => {
+        if (!(e.id === outerId)) {
+          removeCurrentById(e.id);
+        } else {
+          that.setState({"current": [e]});
+        }
+      })
+    }).catch(function(error) {
+      console.log(error);
+    });
   }
 
   setNotification() {
@@ -100,45 +138,60 @@ export default class App extends Component<{}> {
   }
 
   onPressCompleteWorkout() {
-    return
+    var that = this;
+    insertWorkout(that.state.current[0].name, that.state.current[0].count, "2004-01-02 02:34:56", 5, 1).then(function() {
+      that.getPieChartData();
+      // Get new workout and update state
+      that.updateCurrent();
+    }).catch(function(error) {
+      console.log(error);
+    });
   }
 
   onPressFailWorkout() {
-    return
+    var that = this;
+    insertWorkout(that.state.current[0].name, that.state.current[0].count, "2004-01-02 02:34:56", 5, 0).then(function() {
+      that.getPieChartData();
+      // Get new workout and update state
+      that.updateCurrent();
+    }).catch(function(error) {
+      console.log(error);
+    });
   }
 
   render() {
     return (
       <ScrollView>
-        <View style={styles.container}>
-          <View style={{marginTop: 20, flexDirection: 'row'}}>
-            <View style={{flex: 5}}>
-              <Text style={{fontSize: 69, textAlign: 'center',}}>Drill Sgt</Text>
-            </View>
+        <View style={{
+          flex: 1,
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+          <View>
+            <Text style={{fontSize: 69, textAlign: 'center', marginTop: 10}}>Drill Sgt</Text>
           </View>
-          <View style={{flexGrow: 2}}>
+          <View>
             <PieChart data={this.state.pieChartData}/>
           </View>
-          <View style={{flexGrow: 1}}>
-            <Text style={{fontSize: 35, textAlign: 'center',}}>{this.state.current.name} {this.state.current.count}</Text>
-            <View style={styles.buttonContainer}>
+          <View>
+            <Text style={{fontSize: 35, textAlign: 'center', marginBottom: 20}}>{this.state.current[0].name} {this.state.current[0].count}</Text>
+          </View>
+          <View>
               <Button
-                style={styles.buttonComplete}
+                style={{width: 600, height: 300,}}
                 onPress={this.onPressCompleteWorkout}
                 title="Complete"
                 color="cyan"
                 accessibilityLabel="Once finished the workout you will input your ratings."
               />
-            </View>
-            <View style={styles.buttonContainer}>
               <Button
-                style={styles.buttonFaile}
+                style={{width: 600, height: 300,}}
                 onPress={this.onPressFailWorkout}
                 title="Failed"
                 color="tomato"
                 accessibilityLabel="Statistics and charts."
               />
-            </View>
           </View>
         </View>
       </ScrollView>
@@ -163,9 +216,12 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
-  buttonComplete: {
+  row: {
+    flex: 1,
+    flexDirection: "row"
   },
-  buttonFail: {
+  buttonContainer: {
+    flex: 1,
   },
 });
 
@@ -180,6 +236,39 @@ const styles = StyleSheet.create({
   </View>
   <View style={{flex: 5}}>
     <Text style={{fontSize: 69, textAlign: 'left', paddingLeft: 10}}>Drill Sgt.</Text>
+  </View>
+</View>
+
+<View style={styles.container}>
+  <View style={{flexGrow: 1, marginTop: 20, flexDirection: 'row'}}>
+    <View style={{flex: 5}}>
+      <Text style={{fontSize: 69, textAlign: 'center',}}>Drill Sgt</Text>
+    </View>
+  </View>
+  <View style={{flexGrow: 2}}>
+    <PieChart data={this.state.pieChartData}/>
+  </View>
+  <View style={{flexGrow: 1}}>
+    <Text style={{fontSize: 35, textAlign: 'center',}}>{this.state.current[0].name} {this.state.current[0].count}</Text>
+    <View style={styles.row}>
+       <View style={styles.buttonContainer}>
+         <Button
+           onPress={this.onPressCompleteWorkout}
+           title="Complete"
+           color="cyan"
+           accessibilityLabel="Once finished the workout you will input your ratings."
+         />
+       </View>
+       <View style={styles.buttonContainer}>
+         <Button
+           style={styles.buttonFaile}
+           onPress={this.onPressFailWorkout}
+           title="Failed"
+           color="tomato"
+           accessibilityLabel="Statistics and charts."
+         />
+       </View>
+     </View>
   </View>
 </View>
 */
