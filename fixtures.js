@@ -199,8 +199,8 @@ var insertCurrent = function(name, count) {
     getMaxCurrentId().then((maxID) => {
       var currentId = maxID + 1;
       var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
-      var n = 1; // num of minutes to advance the time // TODO rand time
-      db.executeSql('INSERT INTO Current (id, name, count, time) VALUES (?, ?, ?, datetime(\'now\', \'localtime\', \'+' + n + ' minutes\'))',
+      var n = 15; // num of minutes to advance the time // TODO rand time
+      db.executeSql('INSERT INTO Current (id, name, count, time) VALUES (?, ?, ?, datetime(\'now\', \'localtime\', \'+' + n + ' seconds\'))',
         [currentId, name, count],
         function () {
           resolve(currentId);
