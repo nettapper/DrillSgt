@@ -35,7 +35,7 @@ var populateDatabase = function (db, testing) {
   // Create the tables
   db.executeSql("CREATE TABLE IF NOT EXISTS Exercise (name TEXT PRIMARY KEY NOT NULL, startCount INT NOT NULL)", [], successcb, errorcb);
   db.executeSql("CREATE TABLE IF NOT EXISTS Workout (id INT PRIMARY KEY NOT NULL, name TEXT NOT NULL, count INT NOT NULL, difficulty INT NOT NULL, time DATETIME NOT NULL, completed BOOL NOT NULL, FOREIGN KEY (name) REFERENCES Exercise (name))", [], successcb, errorcb);
-  db.executeSql("CREATE TABLE IF NOT EXISTS Current (id INT PRIMARY KEY NOT NULL, name TEXT NOT NULL, count INT NOT NULL, FOREIGN KEY (name) REFERENCES Exercise (name))", [], successcb, errorcb);
+  db.executeSql("CREATE TABLE IF NOT EXISTS Current (id INT PRIMARY KEY NOT NULL, name TEXT NOT NULL, count INT NOT NULL, time DATETIME NOT NULL, FOREIGN KEY (name) REFERENCES Exercise (name))", [], successcb, errorcb);
 
   // Insert values
   db.executeSql('INSERT INTO Exercise (name, startCount) VALUES ("Pushups", 10);', []);
@@ -53,7 +53,7 @@ var addExampleData = function(db) {
   db.executeSql('INSERT INTO Workout (id, name, count, difficulty, time, completed) VALUES (4, "Diamond Pushups", 15, 5, "2004-01-02 05:34:56", 0);', []);
   db.executeSql('INSERT INTO Workout (id, name, count, difficulty, time, completed) VALUES (5, "Pushups", 20, 4, "2004-03-02 05:34:56", 1);', []);
 
-  db.executeSql('INSERT INTO Current (id, name, count) VALUES (10, "Pushups", 21);', []);
+  db.executeSql('INSERT INTO Current (id, name, count, time) VALUES (0, "Pushups", 21, "2004-03-02 05:34:56");', []);
 }
 
 export function countExerciseFailure() {
@@ -182,6 +182,45 @@ export function getWorkout() {
       function (error) {
         reject("getWorkout failed");
       });
+  });
+}
+
+var getMaxCurrentId = function() {
+  return new Promise(function(resolve, reject) {
+    var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
+    db.executeSql('SELECT Max(id) FROM Current', [],
+      function (data) {
+        max = undefined;
+        for(var i=0; i < data["rows"]["length"]; i++) {
+          if(max === undefined)
+            max = data["rows"]["item"](i)["count(*)"];
+          else
+            max = max > data["rows"]["item"](i) ? max : data["rows"]["item"](i)["count(*)"];
+        }
+        resolve(max);
+      },
+      function (error) {
+        reject("getWorkout failed");
+      });
+  });
+}
+
+export function insertCurrent(name, count, datetime) {
+  return new Promise(function(resolve, reject) {
+    getMaxCurrentId().then(maxID) {
+      var db = SQLite.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);
+      db.executeSql('INSERT INTO Current (id, name, count, time) VALUES (?, ?, ?, ?)',
+        [maxID, name, count, datetime],
+        function () {
+          resolve(maxID);
+        },
+        function (error) {
+          reject("insertWorkout failed");
+        });
+    }.catch((err) => {
+      console.log("couldn't getMaxCurrentId in insertCurrent", err);
+      reject("couldn't getMaxCurrentId in insertCurrent");
+    });
   });
 }
 
