@@ -80,11 +80,11 @@ export default class App extends Component<{}> {
     console.log("I GOT CALLED")
     var that = this;
     countExerciseComplete().then(function(countC) {
-      console.log(countC)
+      console.log("countC", countC)
       that.setState({"pieChartData": {"Failed": that.state.pieChartData.Failed, "Complete": countC}});
       return countExerciseFailure();
     }).then(function(countF) {
-      console.log(countF)
+      console.log("countF", countF)
       that.setState({"pieChartData": {"Failed": countF, "Complete": that.state.pieChartData.Complete}});
     }).catch(function(error) {
       console.log(error);
@@ -139,7 +139,7 @@ export default class App extends Component<{}> {
 
   onPressCompleteWorkout() {
     var that = this;
-    insertWorkout(that.state.current[0].name, that.state.current[0].count, "2004-01-02 02:34:56", 5, 1).then(function() {
+    insertWorkout(that.state.current[0].name, that.state.current[0].count, 5, 1).then(function() {
       that.getPieChartData();
       // Get new workout and update state
       that.updateCurrent();
@@ -150,7 +150,7 @@ export default class App extends Component<{}> {
 
   onPressFailWorkout() {
     var that = this;
-    insertWorkout(that.state.current[0].name, that.state.current[0].count, "2004-01-02 02:34:56", 5, 0).then(function() {
+    insertWorkout(that.state.current[0].name, that.state.current[0].count, 5, 0).then(function() {
       that.getPieChartData();
       // Get new workout and update state
       that.updateCurrent();
