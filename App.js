@@ -1,9 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
 import React, { Component } from 'react';
 import {
   Platform,
@@ -21,18 +15,12 @@ var fixtures = require('./fixtures');
 import PushNotification from "react-native-push-notification";
 import PieChart from './components/PieChart';
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' +
-    'Cmd+D or shake for dev menu',
-  android: 'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
-
 export default class App extends Component<{}> {
   constructor(props) {
     super(props);
     this.state = {
       "activated": false,
+      "ongoingId": "init",
     };
   }
 
@@ -43,10 +31,9 @@ export default class App extends Component<{}> {
       PushNotification.registerNotificationActions(["I\'m Done"]);
 
       DeviceEventEmitter.addListener('notificationActionReceived', function(action) {
-        console.log('Notification action received: ' + action);
         const info = JSON.parse(action.dataJSON);
         if (info.action == "I\'m Done") {
-          // Do work pertaining to Accept action here
+          // Do work pertaining to I\'m Done action here
           console.log("im done")
         }
       });
@@ -95,19 +82,6 @@ export default class App extends Component<{}> {
           <View style={{flexGrow: 2}}>
             <PieChart/>
           </View>
-
-          <View style={{flexGrow: 6}}>
-            <Text style={styles.welcome}>
-              Welcome to React Native!
-            </Text>
-            <Text style={styles.instructions}>
-              To get started, edit App.js
-            </Text>
-            <Text style={styles.instructions}>
-              {instructions}
-            </Text>
-          </View>
-
           <View style={{flexGrow: 1}}>
             <Button
               onPress={onPressCompleteWorkout}
