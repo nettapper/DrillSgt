@@ -18,6 +18,11 @@ const irpad = 10; // padding for the innerRadius
 
 export default class App extends Component<{}> {
   render() {
+    const { data } = this.props;
+
+    console.log("GI")
+    console.log(data);
+
     return (
       <Svg width={wh} height={wh}>
         <Image y={wh/2 - imgwh/2} x={wh/2 - imgwh/2} width={imgwh} height={imgwh} href={require('../img/drill-sgt-logo.png')}/>
@@ -30,8 +35,8 @@ export default class App extends Component<{}> {
           padAngle={3}
           colorScale={["tomato", "cyan"]}
           data={[
-            { x: "Failed", y: 24 },
-            { x: "Complete", y: 78 }
+            { x: "Failed", y: data.Failed },
+            { x: "Complete", y: data.Complete }
           ]}
           labelRadius={90}
           style={{ labels: { fill: "black", fontSize: 20, fontWeight: "bold" } }}

@@ -11,7 +11,10 @@ import {
   Linking,
 } from 'react-native';
 
-var fixtures = require('./fixtures');
+import {
+  countExerciseComplete,
+  countExerciseFailure,
+} from './fixtures';
 
 import PushNotification from "react-native-push-notification";
 import PieChart from './components/PieChart';
@@ -19,13 +22,34 @@ import PieChart from './components/PieChart';
 export default class App extends Component<{}> {
   constructor(props) {
     super(props);
-    this.onPressCompleteWorkout = this.onPressCompleteWorkout.bind(this)
-    this.onPressStatistics = this.onPressStatistics.bind(this)
-    this.setNotification = this.setNotification.bind(this)
+    this.onPressCompleteWorkout = this.onPressCompleteWorkout.bind(this);
+    this.onPressStatistics = this.onPressStatistics.bind(this);
+    this.setNotification = this.setNotification.bind(this);
+    this.getPieChartData = this.getPieChartData.bind(this);
+
+    // Get data
+    this.getPieChartData();
+    //this.setState({"pieChartData": completedAndFailedWorkout()});
+
     this.state = {
       "activated": false,
       "ongoingId": "init",
+      "pieChartData": {"Failed": 1, "Complete": 1},
     };
+  }
+
+  getPieChartData() {
+    var that = this;
+    countExerciseComplete().then(function(countC) {
+      console.log(countC);
+      that.setState({"pieChartData": {"Failed": that.state.pieChartData.Failed, "Complete": countC}});
+      return countExerciseFailure();
+    }).then(function(countF) {
+      console.log(countF);
+      that.setState({"pieChartData": {"Failed": countF, "Complete": that.state.pieChartData.Complete}});
+    }).catch(function(error) {
+      console.log(error);
+    });
   }
 
   componentWillMount() {
@@ -91,7 +115,7 @@ export default class App extends Component<{}> {
             </View>
           </View>
           <View style={{flexGrow: 2}}>
-            <PieChart/>
+            <PieChart data={this.state.pieChartData}/>
           </View>
           <View style={{flexGrow: 1}}>
             <Text style={{fontSize: 35, textAlign: 'center',}}>20 Pushups</Text>
