@@ -23,18 +23,18 @@ export default class App extends Component<{}> {
   constructor(props) {
     super(props);
     this.onPressCompleteWorkout = this.onPressCompleteWorkout.bind(this);
-    this.onPressStatistics = this.onPressStatistics.bind(this);
+    this.onPressFailWorkout = this.onPressFailWorkout.bind(this);
     this.setNotification = this.setNotification.bind(this);
     this.getPieChartData = this.getPieChartData.bind(this);
 
     // Get data
     this.getPieChartData();
-    //this.setState({"pieChartData": completedAndFailedWorkout()});
 
     this.state = {
       "activated": false,
       "ongoingId": "init",
       "pieChartData": {"Failed": 1, "Complete": 1},
+      "current": {"name": "Pushups", "count": 20},
     };
   }
 
@@ -75,6 +75,8 @@ export default class App extends Component<{}> {
   setNotification() {
     PushNotification.cancelLocalNotifications({id: '69'});
 
+    // Query random workout
+
     PushNotification.localNotificationSchedule({
       id: '69',
       largeIcon: "ic_launcher",
@@ -101,7 +103,7 @@ export default class App extends Component<{}> {
     return
   }
 
-  onPressStatistics() {
+  onPressFailWorkout() {
     return
   }
 
@@ -118,20 +120,22 @@ export default class App extends Component<{}> {
             <PieChart data={this.state.pieChartData}/>
           </View>
           <View style={{flexGrow: 1}}>
-            <Text style={{fontSize: 35, textAlign: 'center',}}>20 Pushups</Text>
+            <Text style={{fontSize: 35, textAlign: 'center',}}>{this.state.current.name} {this.state.current.count}</Text>
             <View style={styles.buttonContainer}>
               <Button
+                style={styles.buttonComplete}
                 onPress={this.onPressCompleteWorkout}
-                title="Complete This Workout"
-                color="#841584"
+                title="Complete"
+                color="cyan"
                 accessibilityLabel="Once finished the workout you will input your ratings."
               />
             </View>
             <View style={styles.buttonContainer}>
               <Button
-                onPress={this.onPressStatistics}
-                title="Stats"
-                color="#66CCCC"
+                style={styles.buttonFaile}
+                onPress={this.onPressFailWorkout}
+                title="Failed"
+                color="tomato"
                 accessibilityLabel="Statistics and charts."
               />
             </View>
@@ -159,8 +163,10 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
-  buttonContainer: {
-  }
+  buttonComplete: {
+  },
+  buttonFail: {
+  },
 });
 
 /*
